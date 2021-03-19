@@ -1,7 +1,7 @@
 ﻿using Microsoft.Win32.SafeHandles;
 using System.Runtime.InteropServices;
 
-namespace MiniTerm.Native
+namespace PseudoConsoleSharp.Native
 {
     /// <summary>
     /// PInvoke signatures for win32 console api

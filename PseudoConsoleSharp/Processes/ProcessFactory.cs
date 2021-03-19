@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using static MiniTerm.Native.ProcessApi;
+using static PseudoConsoleSharp.Native.ProcessApi;
 
-namespace MiniTerm
+namespace PseudoConsoleSharp
 {
     /// <summary>
     /// Support for starting and configuring processes.

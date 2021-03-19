@@ -2,7 +2,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace MiniTerm.Native
+namespace PseudoConsoleSharp.Native
 {
     /// <summary>
     /// PInvoke signatures for win32 pseudo console api

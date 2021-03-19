@@ -1,8 +1,8 @@
 ﻿using Microsoft.Win32.SafeHandles;
 using System;
-using static MiniTerm.Native.PseudoConsoleApi;
+using static PseudoConsoleSharp.Native.PseudoConsoleApi;
 
-namespace MiniTerm
+namespace PseudoConsoleSharp
 {
     /// <summary>
     /// A pipe used to talk to the pseudoconsole, as described in:

@@ -4,9 +4,9 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using static MiniTerm.Native.ConsoleApi;
+using static PseudoConsoleSharp.Native.ConsoleApi;
 
-namespace MiniTerm
+namespace PseudoConsoleSharp
 {
     /// <summary>
     /// The UI of the terminal. It's just a normal console window, but we're managing the input/output.
