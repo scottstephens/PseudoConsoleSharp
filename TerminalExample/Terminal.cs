@@ -19,25 +19,7 @@ namespace PseudoConsoleSharp
 
         public Terminal()
         {
-            EnableVirtualTerminalSequenceProcessing();
-        }
-
-        /// <summary>
-        /// Newer versions of the windows console support interpreting virtual terminal sequences, we just have to opt-in
-        /// </summary>
-        private static void EnableVirtualTerminalSequenceProcessing()
-        {
-            var hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
-            if (!GetConsoleMode(hStdOut, out uint outConsoleMode))
-            {
-                throw new InvalidOperationException("Could not get console mode");
-            }
-
-            outConsoleMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN;
-            if (!SetConsoleMode(hStdOut, outConsoleMode))
-            {
-                throw new InvalidOperationException("Could not enable virtual terminal processing");
-            }
+            Utilities.EnableVirtualTerminalSequenceProcessing();
         }
 
         /// <summary>
@@ -47,19 +29,18 @@ namespace PseudoConsoleSharp
         /// <param name="command">the command to run, e.g. cmd.exe</param>
         public void Run(string command)
         {
-            using (var inputPipe = new PseudoConsolePipe())
-            using (var outputPipe = new PseudoConsolePipe())
-            using (var pseudoConsole = PseudoConsole.Create(inputPipe.ReadSide, outputPipe.WriteSide, (short)Console.WindowWidth, (short)Console.WindowHeight))
-            using (var process = ProcessFactory.Start(command, PseudoConsole.PseudoConsoleThreadAttribute, pseudoConsole.Handle))
+            using (var pseudoConsole = new PseudoConsole())
+            //using (var process = ProcessExFactory.Start(command, PseudoConsole.PseudoConsoleThreadAttribute, pseudoConsole.Handle))
             {
+                pseudoConsole.Start(command);
                 // copy all pseudoconsole output to stdout
-                Task.Run(() => CopyPipeToOutput(outputPipe.ReadSide));
+                Task.Run(() => CopyPipeToOutput(pseudoConsole.OutputStream));
                 // prompt for stdin input and send the result to the pseudoconsole
-                Task.Run(() => CopyInputToPipe(inputPipe.WriteSide));
+                Task.Run(() => CopyInputToPipe(pseudoConsole.InputStream));
                 // free resources in case the console is ungracefully closed (e.g. by the 'x' in the window titlebar)
-                OnClose(() => DisposeResources(process, pseudoConsole, outputPipe, inputPipe));
+                OnClose(() => DisposeResources(pseudoConsole));
 
-                WaitForExit(process).WaitOne(Timeout.Infinite);
+                pseudoConsole.ProcessEndedGate.WaitOne();
             }
         }
 
@@ -67,11 +48,11 @@ namespace PseudoConsoleSharp
         /// Reads terminal input and copies it to the PseudoConsole
         /// </summary>
         /// <param name="inputWriteSide">the "write" side of the pseudo console input pipe</param>
-        private static void CopyInputToPipe(SafeFileHandle inputWriteSide)
+        private static void CopyInputToPipe(Stream inputWriteSide)
         {
-            using (var writer = new StreamWriter(new FileStream(inputWriteSide, FileAccess.Write)))
+            using (var writer = new StreamWriter(inputWriteSide))
             {
-                ForwardCtrlC(writer);
+                //ForwardCtrlC(writer);
                 writer.AutoFlush = true;
                 writer.WriteLine(@"cd \");
 
@@ -100,23 +81,18 @@ namespace PseudoConsoleSharp
         /// Reads PseudoConsole output and copies it to the terminal's standard out.
         /// </summary>
         /// <param name="outputReadSide">the "read" side of the pseudo console output pipe</param>
-        private static void CopyPipeToOutput(SafeFileHandle outputReadSide)
+        private static void CopyPipeToOutput(Stream outputReadSide)
         {
-            using (var terminalOutput = Console.OpenStandardOutput())
-            using (var pseudoConsoleOutput = new FileStream(outputReadSide, FileAccess.Read))
+            using (var reader = new StreamReader(outputReadSide, Encoding.UTF8))
             {
-                pseudoConsoleOutput.CopyTo(terminalOutput);
+                //pseudoConsoleOutput.CopyTo(terminalOutput);
+                while (true)
+                {
+                    var line = reader.ReadLine();
+                    Console.WriteLine(line);
+                }
             }
         }
-
-        /// <summary>
-        /// Get an AutoResetEvent that signals when the process exits
-        /// </summary>
-        private static AutoResetEvent WaitForExit(Process process) =>
-            new AutoResetEvent(false)
-            {
-                SafeWaitHandle = new SafeWaitHandle(process.ProcessInfo.hProcess, ownsHandle: false)
-            };
 
         /// <summary>
         /// Set a callback for when the terminal is closed (e.g. via the "X" window decoration button).

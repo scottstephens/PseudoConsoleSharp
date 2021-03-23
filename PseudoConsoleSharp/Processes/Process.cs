@@ -7,9 +7,9 @@ namespace PseudoConsoleSharp
     /// <summary>
     /// Represents an instance of a process.
     /// </summary>
-    internal sealed class Process : IDisposable
+    internal sealed class ProcessEx : IDisposable
     {
-        public Process(STARTUPINFOEX startupInfo, PROCESS_INFORMATION processInfo)
+        public ProcessEx(STARTUPINFOEX startupInfo, PROCESS_INFORMATION processInfo)
         {
             StartupInfo = startupInfo;
             ProcessInfo = processInfo;
@@ -54,7 +54,7 @@ namespace PseudoConsoleSharp
             }
         }
 
-        ~Process()
+        ~ProcessEx()
         {
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose(false);

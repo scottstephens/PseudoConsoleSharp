@@ -19,7 +19,7 @@ namespace PseudoConsoleSharp.Native
         }
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        internal static extern int CreatePseudoConsole(COORD size, SafeFileHandle hInput, SafeFileHandle hOutput, uint dwFlags, out IntPtr phPC);
+        internal static extern int CreatePseudoConsole(COORD size, SafeHandle hInput, SafeHandle hOutput, uint dwFlags, out IntPtr phPC);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         internal static extern int ResizePseudoConsole(IntPtr hPC, COORD size);

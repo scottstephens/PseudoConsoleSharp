@@ -10,16 +10,16 @@ namespace PseudoConsoleSharp
     /// <remarks>
     /// Possible to replace with managed code? The key is being able to provide the PROC_THREAD_ATTRIBUTE_PSEUDOCONSOLE attribute
     /// </remarks>
-    static class ProcessFactory
+    internal static class ProcessExFactory
     {
         /// <summary>
         /// Start and configure a process. The return value represents the process and should be disposed.
         /// </summary>
-        internal static Process Start(string command, IntPtr attributes, IntPtr hPC)
+        internal static ProcessEx Start(string command, IntPtr attributes, IntPtr hPC)
         {
             var startupInfo = ConfigureProcessThread(hPC, attributes);
             var processInfo = RunProcess(ref startupInfo, command);
-            return new Process(startupInfo, processInfo);
+            return new ProcessEx(startupInfo, processInfo);
         }
 
         private static STARTUPINFOEX ConfigureProcessThread(IntPtr hPC, IntPtr attributes)
