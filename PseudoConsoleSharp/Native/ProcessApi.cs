@@ -9,6 +9,13 @@ namespace PseudoConsoleSharp.Native
     static class ProcessApi
     {
         internal const uint EXTENDED_STARTUPINFO_PRESENT = 0x00080000;
+        internal const uint CREATE_NEW_CONSOLE = 0x00000010;
+        internal const uint PROC_THREAD_ATTRIBUTE_HANDLE_LIST = 0x20002;
+
+        internal const uint FOPEN = 0x01;
+        internal const uint FDEV = 0x40;
+
+        internal const uint STARTF_USESTDHANDLES = 0x00000100;
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
         internal struct STARTUPINFOEX
@@ -31,7 +38,7 @@ namespace PseudoConsoleSharp.Native
             public Int32 dwXCountChars;
             public Int32 dwYCountChars;
             public Int32 dwFillAttribute;
-            public Int32 dwFlags;
+            public UInt32 dwFlags;
             public Int16 wShowWindow;
             public Int16 cbReserved2;
             public IntPtr lpReserved2;

@@ -24,7 +24,8 @@ namespace MiniTerm
             try
             {
                 var terminal = new Terminal();
-                terminal.Run("cmd.exe");
+                //terminal.Run("cmd.exe");
+                terminal.Run(@"C:\ProgramFiles\CMEGroup\Span4\bin\spanit.exe C:\Users\scott\Downloads\spanit_example_2.txt");
             }
             catch (InvalidOperationException e)
             {

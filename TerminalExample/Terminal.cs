@@ -42,6 +42,7 @@ namespace PseudoConsoleSharp
 
                 pseudoConsole.ProcessEndedGate.WaitOne();
             }
+            Thread.Sleep(60 * 1000);
         }
 
         /// <summary>
