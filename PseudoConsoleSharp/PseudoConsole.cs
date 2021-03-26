@@ -32,8 +32,6 @@ namespace PseudoConsoleSharp
             this.OutputStream = new AnonymousPipeServerStream(PipeDirection.In, HandleInheritability.Inheritable);
 
             this.Handle = Create(this.InputStream.ClientSafePipeHandle, this.OutputStream.ClientSafePipeHandle, 120, 80);
-            this.InputStream.DisposeLocalCopyOfClientHandle();
-            this.OutputStream.DisposeLocalCopyOfClientHandle();
         }
 
         public PseudoConsole(string command)
@@ -45,6 +43,8 @@ namespace PseudoConsoleSharp
         public void Start(string command)
         {
             this.Process = ProcessExFactory.Start(command, PseudoConsole.PseudoConsoleThreadAttribute, this.Handle);
+            this.InputStream.DisposeLocalCopyOfClientHandle();
+            this.OutputStream.DisposeLocalCopyOfClientHandle();
             var wh = new SafeWaitHandle(this.Process.ProcessInfo.hProcess, ownsHandle: false);
             var mre = new ManualResetEvent(false)
             {
